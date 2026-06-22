@@ -182,19 +182,51 @@ class TestGalleryApp(unittest.TestCase):
         self.assertEqual(viewer.current_grid_cols, 1)
         self.assertEqual(viewer.badge_label.text(), "📁 1 Image")
         self.assertFalse(viewer.badge_label.isHidden())
-        
+
         # 2. Append another image (simulate drag & drop append)
         viewer.load_multiple_media_grid([self.test_img_path], append=True)
         self.assertEqual(len(viewer.grid_items), 2)
         self.assertEqual(viewer.current_grid_cols, 2)
         self.assertEqual(viewer.badge_label.text(), "📁 2 Images")
-        
+
         # 3. Test remove item request
         item_to_remove = viewer.grid_items[0]
         viewer.on_remove_item_requested(item_to_remove)
         self.assertEqual(len(viewer.grid_items), 1)
         self.assertEqual(viewer.current_grid_cols, 1)
         self.assertEqual(viewer.badge_label.text(), "📁 1 Image")
+
+    def test_sequential_drops_append_even_after_view_switch(self):
+        viewer = self.window.detail_viewer
+
+        viewer.load_multiple_media_grid([self.test_img_path])
+        self.assertEqual(len(viewer.grid_items), 1)
+        self.assertEqual(viewer.current_grid_cols, 1)
+
+        # Starting a sidebar drag can briefly switch to the focused image page.
+        # The following drop must still append to the existing grid.
+        viewer.load_media(self.test_img_path)
+        self.assertEqual(viewer.stacked_widget.currentIndex(), 0)
+
+        mime_data = QMimeData()
+        mime_data.setUrls([QUrl.fromLocalFile(self.test_img_path)])
+        drop_ev = QDropEvent(
+            QPoint(10, 10), Qt.DropAction.CopyAction, mime_data,
+            Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier
+        )
+        viewer.dropEvent(drop_ev)
+
+        self.assertEqual(len(viewer.grid_items), 2)
+        self.assertEqual(viewer.current_grid_cols, 2)
+        self.assertEqual(viewer.stacked_widget.currentIndex(), 4)
+
+        viewer.load_media(self.test_img_path)
+        viewer.dropEvent(drop_ev)
+
+        self.assertEqual(len(viewer.grid_items), 3)
+        self.assertEqual(viewer.current_grid_cols, 2)
+        self.assertEqual(viewer.stacked_widget.currentIndex(), 4)
+        self.assertEqual(viewer.badge_label.text(), "📁 3 Images")
 
 if __name__ == '__main__':
     unittest.main()
