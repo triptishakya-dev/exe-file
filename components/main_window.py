@@ -19,6 +19,23 @@ from services.thumbnail_loader import ThumbnailLoader
 from components.sidebar import ImageCard, SidebarListWidget
 from components.detail_viewer import DetailViewer
 
+def get_untranslocated_path(app_path):
+    if sys.platform != 'darwin':
+        return app_path
+    try:
+        import subprocess
+        cmd = ['/usr/bin/security', 'translocate-original-path', app_path]
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode('utf-8')
+        lines = [line.strip() for line in output.splitlines() if line.strip()]
+        for line in lines:
+            if line.startswith('/') or (len(line) > 1 and line[1] == ':'):
+                return line
+            if not line.startswith('Original Path:'):
+                return line
+    except Exception:
+        pass
+    return app_path
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -97,7 +114,9 @@ class MainWindow(QMainWindow):
         if getattr(sys, 'frozen', False):
             exec_dir = os.path.dirname(os.path.abspath(sys.executable))
             if "Contents/MacOS" in exec_dir:
-                base_dir = os.path.abspath(os.path.join(exec_dir, "..", "..", ".."))
+                app_path = os.path.abspath(os.path.join(exec_dir, "..", ".."))
+                resolved_app_path = get_untranslocated_path(app_path)
+                base_dir = os.path.abspath(os.path.join(resolved_app_path, ".."))
             else:
                 base_dir = exec_dir
             
