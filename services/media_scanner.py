@@ -37,8 +37,9 @@ class ImageWorker(QThread):
                 if os.path.isdir(subpath):
                     try:
                         for f in os.listdir(subpath):
-                            if f.lower().endswith(ALL_EXTS):
-                                files_to_scan.append((os.path.join(subpath, f), f))
+                            full_p = os.path.join(subpath, f)
+                            if os.path.isfile(full_p) and (sub == "others" or f.lower().endswith(ALL_EXTS)):
+                                files_to_scan.append((full_p, f))
                     except Exception as e:
                         print(f"Error reading subfolder {subpath}: {e}")
             # Also scan the base folder directly to see if any media files are there
