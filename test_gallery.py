@@ -126,8 +126,8 @@ class TestGalleryApp(unittest.TestCase):
         card1.set_selected(True)
         card2.set_selected(True)
         
-        with patch('gallery.QDrag.exec_', return_value=Qt.DropAction.CopyAction) as mock_exec, \
-             patch('gallery.QDrag.setMimeData') as mock_set_mime:
+        with patch('components.main_window.QDrag.exec_', return_value=Qt.DropAction.CopyAction) as mock_exec, \
+             patch('components.main_window.QDrag.setMimeData') as mock_set_mime:
              
             self.window.start_drag_operations(card1)
             

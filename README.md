@@ -69,15 +69,25 @@ PixelVista is a beautiful and lightweight desktop image viewer built with Python
 
 ```text
 PixelVista/
-│
-├── gallery.py
-├── requirements.txt
-├── README.md
-├── icon.ico
-└── images/
-    ├── image1.jpg
-    ├── image2.png
-    └── image3.webp
+├── gallery.py                 # Application entry point
+├── components/
+│   ├── main_window.py
+│   ├── detail_viewer.py
+│   ├── image_viewer.py
+│   ├── video_viewer.py
+│   ├── pdf_viewer.py
+│   ├── sidebar.py
+│   ├── grid_image_item.py
+│   └── drag_overlay.py
+├── services/
+│   ├── media_scanner.py
+│   └── thumbnail_loader.py
+├── config/
+│   ├── constants.py
+│   └── styles.py
+├── public/
+├── test_gallery.py
+└── requirements.txt
 ```
 
 ---
@@ -247,7 +257,7 @@ PixelVista automatically detects and displays all images.
 ## 🧰 Tech Stack
 
 * Python 3.11+
-* PySide6 / PyQt6
+* PyQt5
 * Pillow
 * Watchdog
 * PyInstaller
