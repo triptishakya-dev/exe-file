@@ -59,10 +59,8 @@ def main():
             else:
                 raise FileNotFoundError("Could not find gallery.exe or GalleryX.exe in dist/")
 
-        # Create exe folder inside pkg_dir
-        exe_dir = os.path.join(pkg_dir, "exe")
-        os.makedirs(exe_dir, exist_ok=True)
-        shutil.copy2(exe_src, os.path.join(exe_dir, os.path.basename(exe_src)))
+        # Copy exe directly to pkg_dir
+        shutil.copy2(exe_src, os.path.join(pkg_dir, os.path.basename(exe_src)))
 
         # Organize media folders inside the package
         organize_media(pkg_dir)
